@@ -21,7 +21,6 @@ export const addCommonFields = format(info => {
 
   updated.level = updated.level.toUpperCase();
   updated['traceId'] = currentSpan && currentSpan.context().traceId;
-  updated['convId'] = currentSpan && currentSpan.attributes.conversationId;
   updated['service'] = 'repo-to-gp';
   updated['environment'] = nhsEnvironment;
   return updated;

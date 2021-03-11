@@ -1,23 +1,18 @@
 import { logger } from '../config/logging';
 import { tracer } from '../tracing';
 import { context, setSpan } from '@opentelemetry/api';
-import { v4 } from 'uuid';
 
 export const logError = (status, error) => logger.error(status, { error });
+
 export const logWarning = status => logger.warn(status);
-export const logInfo = status => {
-  context.with(setSpan(context.active(), span), () => {
-    logger.info(status);
-  });
-};
+
+export const logInfo = status => logger.info(status);
+
 export const logDebug = status => logger.debug(status);
 
-let span;
 export const middleware = (req, res, next) => {
-  span = tracer.startSpan('root_span', context.active());
-  span.setAttributes({
-    conversationId: v4()
-  });
+  const span = tracer.startSpan('inboundRequestSpan', context.active());
+  context.with(setSpan(context.active(), span), () => {});
   res.on('finish', () => eventFinished(req, res));
   next();
   span.end();
